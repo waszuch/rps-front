@@ -1,4 +1,4 @@
-// src/components/Game.tsx
+
 import React, { useContext, useEffect, useState } from 'react';
 import { SocketContext } from '../contexts/SocketContext';
 
@@ -21,13 +21,13 @@ const Game: React.FC<GameProps> = ({ room }) => {
   useEffect(() => {
     if (!socket) return;
 
-    // Nasłuchuj wyniku gry od serwera
+  
     socket.on('result', (data: ResultData) => {
       setOpponentMove(data.opponentMove);
       setResult(data.result);
     });
 
-    // Czyścimy nasłuch po odmontowaniu
+    
     return () => {
       socket.off('result');
     };
@@ -36,7 +36,7 @@ const Game: React.FC<GameProps> = ({ room }) => {
   const handleMove = (move: string) => {
     if (!socket) return;
     setPlayerMove(move);
-    // Wyślij ruch (z informacją o pokoju)
+    
     socket.emit('move', { roomId: room, move });
   };
 

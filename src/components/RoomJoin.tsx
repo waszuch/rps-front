@@ -1,5 +1,5 @@
-// src/components/RoomJoin.tsx
-import React, { useContext, useState } from 'react';
+
+import React, { useContext, useEffect, useState } from 'react';
 import { SocketContext } from '../contexts/SocketContext';
 
 interface RoomJoinProps {
@@ -9,11 +9,35 @@ interface RoomJoinProps {
 const RoomJoin: React.FC<RoomJoinProps> = ({ onJoin }) => {
   const { socket } = useContext(SocketContext);
   const [roomId, setRoomId] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+
+ 
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleRoomFull = (data: { message: string }) => {
+      setErrorMsg(data.message);
+    };
+
+    const handleJoinSuccess = (data: { roomId: string }) => {
+      setErrorMsg('');
+      onJoin(data.roomId);
+    };
+
+    socket.on('roomFull', handleRoomFull);
+    socket.on('joinSuccess', handleJoinSuccess);
+
+    return () => {
+      socket.off('roomFull', handleRoomFull);
+      socket.off('joinSuccess', handleJoinSuccess);
+    };
+  }, [socket, onJoin]);
 
   const handleJoinRoom = () => {
     if (!roomId.trim() || !socket) return;
+    setErrorMsg('');
+   
     socket.emit('joinRoom', roomId.trim());
-    onJoin(roomId.trim());
   };
 
   return (
@@ -23,7 +47,10 @@ const RoomJoin: React.FC<RoomJoinProps> = ({ onJoin }) => {
         type="text"
         placeholder="Podaj ID pokoju"
         value={roomId}
-        onChange={(e) => setRoomId(e.target.value)}
+        onChange={(e) => {
+          setRoomId(e.target.value);
+          setErrorMsg(''); 
+        }}
         className="w-full p-2 border border-gray-300 rounded mb-4 focus:outline-none"
       />
       <button
@@ -32,6 +59,9 @@ const RoomJoin: React.FC<RoomJoinProps> = ({ onJoin }) => {
       >
         Dołącz
       </button>
+      {errorMsg && (
+        <p className="mt-4 text-center text-red-500">{errorMsg}</p>
+      )}
     </div>
   );
 };
