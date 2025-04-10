@@ -14,6 +14,7 @@ const Game: React.FC = () => {
   const [playerMove, setPlayerMove] = useState('');
   const [opponentMove, setOpponentMove] = useState('');
   const [result, setResult] = useState('');
+  const [opponentHasMoved, setOpponentHasMoved] = useState(false); // 💡 NOWOŚĆ
 
   useEffect(() => {
     if (!socket || !roomId) return;
@@ -23,8 +24,14 @@ const Game: React.FC = () => {
       setResult(data.result);
     });
 
+    // 💡 nasłuchuj ruchu przeciwnika
+    socket.on('opponentMoved', () => {
+      setOpponentHasMoved(true);
+    });
+
     return () => {
       socket.off('result');
+      socket.off('opponentMoved');
     };
   }, [socket, roomId]);
 
@@ -41,7 +48,9 @@ const Game: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4">
       <div className="bg-white shadow-2xl rounded-xl p-6 w-full max-w-2xl mx-auto">
-        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center text-gray-800">Rock-Paper-Scissors</h2>
+        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center text-gray-800">
+          Rock-Paper-Scissors
+        </h2>
 
         <div className="flex flex-col items-center space-y-6">
           <div className="flex flex-wrap justify-center gap-4">
@@ -53,17 +62,25 @@ const Game: React.FC = () => {
           <div className="w-full max-w-md space-y-4">
             {playerMove && (
               <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                <p className="text-center text-gray-700">Twój ruch: <span className="font-semibold text-blue-600">{playerMove}</span></p>
+                <p className="text-center text-gray-700">
+                  Twój ruch: <span className="font-semibold text-blue-600">{playerMove}</span>
+                </p>
               </div>
             )}
-            {opponentMove && (
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                <p className="text-center text-gray-700">Ruch przeciwnika: <span className="font-semibold text-blue-600">{opponentMove}</span></p>
-              </div>
-            )}
+
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <p className="text-center text-gray-700">
+                {opponentMove || opponentHasMoved
+                  ? <>Przeciwnik wybrał swój ruch.</>
+                  : <>Oczekiwanie na wybór przeciwnika...</>}
+              </p>
+            </div>
+
             {result && (
               <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                <p className="text-center font-bold text-lg">Wynik: <span className="uppercase text-blue-600">{result}</span></p>
+                <p className="text-center font-bold text-lg">
+                  Wynik: <span className="uppercase text-blue-600">{result}</span>
+                </p>
               </div>
             )}
           </div>
