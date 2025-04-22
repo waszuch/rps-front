@@ -32,27 +32,27 @@ const WaitingRoom = () => {
   }, [socket, roomId, navigate]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600">
-      <div className="p-8 bg-white rounded-lg shadow-xl w-full max-w-md text-center">
-        <h2 className="text-2xl font-bold mb-4 text-gray-800">Waiting for Opponent...</h2>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+      <div className="p-8 bg-card rounded-lg shadow-xl w-full max-w-md text-center">
+        <h2 className="text-2xl font-bold mb-4 text-card-foreground">Waiting for Opponent...</h2>
 
-        <p className="mb-4 text-gray-600 text-sm">Send this link to your friend:</p>
+        <p className="mb-4 text-muted-foreground text-sm">Send this link to your friend:</p>
         <div className="flex flex-col sm:flex-row gap-2 mb-4">
           <input
             type="text"
             value={roomLink}
             readOnly
-            className="flex-1 p-2 border rounded-lg text-gray-800"
+            className="flex-1 p-2 border rounded-lg bg-card text-card-foreground"
           />
           <button
             onClick={copyToClipboard}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition duration-200"
           >
             {showCopied ? 'Copied!' : 'Copy'}
           </button>
         </div>
 
-        <p className="text-gray-500 text-sm animate-pulse">Waiting for second player to join...</p>
+        <p className="text-muted-foreground text-sm animate-pulse">Waiting for second player to join...</p>
       </div>
     </div>
   );

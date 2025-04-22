@@ -19,21 +19,37 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const newSocket = io('https://rps-back.onrender.com', {
-      transports: ['websocket']
+    // Only use localhost:3001 for consistent connection
+    const SERVER_URL = 'http://localhost:3001';
+    console.log(`Connecting to Socket.IO server at: ${SERVER_URL}`);
+    
+    const newSocket = io(SERVER_URL, {
+      transports: ['websocket'],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      timeout: 10000
     });
 
     newSocket.on('connect', () => {
-      console.log('Połączono z serwerem socket.io');
+      console.log('Połączono z serwerem socket.io - ID:', newSocket.id);
     });
 
     newSocket.on('connect_error', (error) => {
       console.error('Błąd połączenia z serwerem:', error);
     });
 
+    newSocket.on('disconnect', (reason) => {
+      console.log('Rozłączono z serwerem socket.io:', reason);
+    });
+
+    newSocket.on('reconnect', (attempt) => {
+      console.log(`Ponowne połączenie - próba ${attempt}`);
+    });
+
     setSocket(newSocket);
 
     return () => {
+      console.log('Zamykanie połączenia socket.io');
       newSocket.close();
     };
   }, []);
