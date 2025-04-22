@@ -20,7 +20,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   useEffect(() => {
     // Only use localhost:3001 for consistent connection
-    const SERVER_URL = 'http://localhost:3001';
+    const SERVER_URL = 'https://rps-back.onrender.com';
     console.log(`Connecting to Socket.IO server at: ${SERVER_URL}`);
     
     const newSocket = io(SERVER_URL, {
